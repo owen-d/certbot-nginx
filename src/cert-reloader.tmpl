@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# check for renewal every hour
+
+HOUR_IN_SECONDS=$(expr 60 '*' 60)
+
+while true; do
+  sleep $(HOUR_IN_SECONDS)
+  /usr/local/bin/gen-certs
+  nginx -s reload
+done

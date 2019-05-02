@@ -1,0 +1,16 @@
+#!/bin/sh
+
+if [ "${STANDALONE}" ]
+then
+    OPTS='--standalone'
+else
+    OPTS='-w /var/www/acme'
+fi
+
+
+
+/acme/acme.sh --issue \
+                       -k {{ var "KEY_LENGTH" | default "4096" }} \
+                        ${OPTS} \
+                       {{ range var "DOMAINS" | default "example.com www.example.com" | split " " }} -d {{.}} {{ end }}
+

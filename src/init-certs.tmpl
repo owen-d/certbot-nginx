@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -e
+
+CERT_DIR=/etc/ssl/acme
+DOMAIN={{ index (var "DOMAINS" | default "www.example.com example.com" | split " ") 0 | printf `expr match '%s' '.*\.\(.*\..*\)'` | sh | replace "\n" "" }}
+
+if [ ! -f $CERT_DIR/$DOMAIN/$DOMAIN.cer ] || [ ! -f $CERT_DIR/$DOMAIN/$DOMAIN.key ];
+then
+    echo generating initial certs...
+    STANDALONE=1 /usr/local/bin/gen-certs
+else
+    echo certs exist...
+fi

@@ -1,0 +1,50 @@
+daemon off;
+error_log /dev/stdout notice;
+user nobody nogroup;
+worker_processes 1;
+
+
+events {
+    worker_connections  1024;
+}
+
+http {
+  server_tokens off;
+  default_type application/octet-stream;
+
+  include conf.d/ssl-params.inc;
+
+  access_log /dev/stdout;
+
+  map $server_addr $proxy_pass_ip {
+    default "{{ var "PROXY_ADDRESS" | default "localhost" }}";
+    ~.*:.*   "[{{ var "PROXY_ADDRESS" | default "localhost" }}]";
+  }
+
+  server {
+    listen                  {{ var "HTTP_PORT" | default "80" }};
+    listen                  [::]:{{ var "HTTP_PORT" | default "80" }};
+    server_name             {{ var "DOMAINS" | default "example.com www.example.com" }};
+    include                 conf.d/acme.inc;
+    include                 conf.d/redirect_http.inc;
+  }
+
+  server {
+    listen                  {{ var "HTTPS_PORT" | default "443" }};
+    listen                  [::]:{{ var "HTTPS_PORT" | default "443" }};
+    server_name             {{ var "DOMAINS" | default "example.com www.example.com" }};
+    ssl                     on;
+    # apologies for the heinous templating. Please see docs for details:
+    # https://github.com/gliderlabs/sigil
+    ssl_certificate         /etc/ssl/acme/{{ index (var "DOMAINS" | default "www.example.com example.com" | split " ") 0 | printf `expr match '%s' '.*\.\(.*\..*\)'` | sh | replace "\n" "" }}/{{ index (var "DOMAINS" | default "www.example.com example.com" | split " ") 0 | printf `expr match '%s' '.*\.\(.*\..*\)'` | sh | replace "\n" "" }}.cer;
+    ssl_certificate_key     /etc/ssl/acme/{{ index (var "DOMAINS" | default "www.example.com example.com" | split " ") 0 | printf `expr match '%s' '.*\.\(.*\..*\)'` | sh | replace "\n" "" }}/{{ index (var "DOMAINS" | default "www.example.com example.com" | split " ") 0 | printf `expr match '%s' '.*\.\(.*\..*\)'` | sh | replace "\n" "" }}.key;
+
+    include /etc/nginx/conf.d/ssl-params.inc; # SSL parameters
+
+    location / {
+      include     conf.d/proxy_set_header.inc;
+      proxy_pass  http://$proxy_pass_ip:{{ var "PROXY_PORT" | default "8080" }}:$request_uri;
+    }
+  }
+
+}
