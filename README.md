@@ -6,6 +6,7 @@
 - `DOMAINS` - space separated domains, i.e. "example.com www.example.com". Wildcards currently not supported as they require setting DNS records which is outside the scope of this tool.
 - `KEY_LENGTH` - 4096
 - `DRY_RUN` - use the letsencrypt staging servers
+- `RESOLVER` - resolver for nginx to use. Defaults to `127.0.0.11`. see [docker docs](https://docs.docker.com/v17.09/engine/userguide/networking/configure-dns/) 
 
 
 ### exposed volumes

@@ -1,7 +1,7 @@
 daemon off;
 error_log /dev/stdout notice;
-user nobody nogroup;
 worker_processes 1;
+user nginx nginx;
 
 
 events {
@@ -43,8 +43,9 @@ http {
     include /etc/nginx/conf.d/ssl-params.inc; # SSL parameters
 
     location / {
+      resolver    {{ var "RESOLVER" | default "127.0.0.11" }} valid=10s;
       include     conf.d/proxy_set_header.inc;
-      proxy_pass  http://$proxy_pass_ip:{{ var "PROXY_PORT" | default "8080" }}:$request_uri;
+      proxy_pass  http://$proxy_pass_ip:{{ var "PROXY_PORT" | default "8080" }};
     }
   }
 

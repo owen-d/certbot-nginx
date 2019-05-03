@@ -1,6 +1,6 @@
 # secure nginx, see https://cipherli.st/
 
-ssl_protocols TLSv1.3;
+ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
 ssl_prefer_server_ciphers on;
 ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
 ssl_ecdh_curve secp384r1; # Requires nginx >= 1.1.0

@@ -7,7 +7,9 @@ build:
 
 .PHONY: run
 run:
-	docker run --rm -e 'DOMAINS=example.com www.example.com' -e "DRY_RUN=1" -it $(IMAGE)
+	docker run --rm -e 'DOMAINS=example.com www.example.com' \
+	-e "DRY_RUN=1" \
+	-it $(IMAGE)
 
 .PHONY: deploy
 deploy:
