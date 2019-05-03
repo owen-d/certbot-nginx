@@ -24,7 +24,7 @@ http {
   server {
     listen                  {{ var "HTTP_PORT" | default "80" }};
     listen                  [::]:{{ var "HTTP_PORT" | default "80" }};
-    server_name             {{ var "DOMAINS" | default "example.com www.example.com" }};
+    server_name             {{ var "DOMAINS" }};
     include                 conf.d/acme.inc;
     include                 conf.d/redirect_http.inc;
   }
@@ -32,12 +32,13 @@ http {
   server {
     listen                  {{ var "HTTPS_PORT" | default "443" }};
     listen                  [::]:{{ var "HTTPS_PORT" | default "443" }};
-    server_name             {{ var "DOMAINS" | default "example.com www.example.com" }};
+    server_name             {{ var "DOMAINS" }};
     ssl                     on;
     # apologies for the heinous templating. Please see docs for details:
     # https://github.com/gliderlabs/sigil
-    ssl_certificate         /etc/ssl/acme/{{ index (var "DOMAINS" | default "www.example.com example.com" | split " ") 0 | printf `expr match '%s' '.*\.\(.*\..*\)'` | sh | replace "\n" "" }}/{{ index (var "DOMAINS" | default "www.example.com example.com" | split " ") 0 | printf `expr match '%s' '.*\.\(.*\..*\)'` | sh | replace "\n" "" }}.cer;
-    ssl_certificate_key     /etc/ssl/acme/{{ index (var "DOMAINS" | default "www.example.com example.com" | split " ") 0 | printf `expr match '%s' '.*\.\(.*\..*\)'` | sh | replace "\n" "" }}/{{ index (var "DOMAINS" | default "www.example.com example.com" | split " ") 0 | printf `expr match '%s' '.*\.\(.*\..*\)'` | sh | replace "\n" "" }}.key;
+    ssl_certificate         /etc/ssl/acme/{{ var "DOMAINS" | printf `/usr/local/bin/trim-domain "%s"` | sh }}/{{ var "DOMAINS" | printf `/usr/local/bin/trim-domain "%s"` | sh }}.cer;
+    ssl_certificate_key     /etc/ssl/acme/{{ var "DOMAINS" | printf `/usr/local/bin/trim-domain "%s"` | sh }}/{{ var "DOMAINS" | printf `/usr/local/bin/trim-domain "%s"` | sh }}.key;
+
 
     include /etc/nginx/conf.d/ssl-params.inc; # SSL parameters
 

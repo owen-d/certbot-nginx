@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# This will take a list of domains domain w/ possible subdomains and return the root (i.e. a.b.d.com -> d.com).
+# It does NOT check whether the inputs all have the same domain.
+
+echo "$1" | sed 's/\(\.\|\s\)/\n/g' | tail -n 2 | paste -sd "." - | tr -d '\n'

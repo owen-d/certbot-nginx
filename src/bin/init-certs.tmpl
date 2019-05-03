@@ -2,8 +2,14 @@
 
 set -e
 
+if [ ! "${DOMAINS}" ]
+then
+    echo must set required argument DOMAINS >&2
+    exit 1
+fi
+
 CERT_DIR=/etc/ssl/acme
-DOMAIN={{ index (var "DOMAINS" | default "www.example.com example.com" | split " ") 0 | printf `expr match '%s' '.*\.\(.*\..*\)'` | sh | replace "\n" "" }}
+DOMAIN={{ var "DOMAINS" | printf `/usr/local/bin/trim-domain "%s"` | sh }}
 
 if [ ! -f $CERT_DIR/$DOMAIN/$DOMAIN.cer ] || [ ! -f $CERT_DIR/$DOMAIN/$DOMAIN.key ];
 then

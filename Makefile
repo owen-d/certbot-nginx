@@ -7,4 +7,8 @@ build:
 
 .PHONY: run
 run:
-	docker run --rm -it $(IMAGE)
+	docker run --rm -e 'DOMAINS=example.com www.example.com' -it $(IMAGE)
+
+.PHONY: deploy
+deploy:
+	docker push $(IMAGE)
