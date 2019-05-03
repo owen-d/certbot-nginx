@@ -7,9 +7,16 @@ else
     OPTS='-w /var/www/acme'
 fi
 
+if [ "${DRY_RUN}" ]
+then
+    echo appending letsencrypt staging server to options
+    OPTS="${OPTS} --staging"
+fi
 
 
-/acme/acme.sh --issue \
+
+
+/acme/acme.sh --cert-home /etc/ssl/acme --issue \
                        -k {{ var "KEY_LENGTH" | default "4096" }} \
                         ${OPTS} \
                        {{ range var "DOMAINS" | split " " }} -d {{.}} {{ end }}

@@ -10,7 +10,7 @@ RUN apk update && apk add --no-cache nginx curl libressl git socat && \
 
 RUN git clone https://github.com/Neilpang/acme.sh.git && \
   cd acme.sh && \
-  ./acme.sh --install --home /acme --cert-home /etc/ssl/acme && \
+  ./acme.sh --install --home /acme && \
   cd ../ && \
   rm -r acme.sh && \
   sed -i '/acme.sh/d' /etc/crontabs/root && \
@@ -29,5 +29,5 @@ ENTRYPOINT [\
   "prehook", "chmod -R +x /usr/local/bin", "--", \
   "prehook", "/usr/local/bin/init-certs", "--", \
   "prehook", "nginx -t", "--", \
-  "codep", "/usr/local/bin/cert-reloader", "nginx -g 'daemon off;'" \
+  "codep", "/usr/local/bin/cert-reloader", "/usr/sbin/nginx" \
 ]
