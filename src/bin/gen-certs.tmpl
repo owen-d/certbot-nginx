@@ -1,13 +1,15 @@
 #!/bin/sh
 
+set -euo pipefail
+
 if [ "${STANDALONE}" ]
 then
     OPTS='--standalone'
 else
-    OPTS='-w /var/www/acme'
+    OPTS="-w ${CERT_DIR}"
 fi
 
-if [ "${DRY_RUN}" ]
+if [ "${DRY_RUN:-}" ]
 then
     echo appending letsencrypt staging server to options
     OPTS="${OPTS} --staging"
@@ -15,9 +17,20 @@ fi
 
 
 
-
 /acme/acme.sh --cert-home /etc/ssl/acme --issue \
                        -k {{ var "KEY_LENGTH" | default "4096" }} \
                         ${OPTS} \
-                       {{ range var "DOMAINS" | split " " }} -d {{.}} {{ end }}
+                        {{ range var "DOMAINS" | split " " }} -d {{.}} {{ end }} \
+                        --cert-file "${CERT_DIR}/cert.cer" \
+                        --key-file "${CERT_DIR}/key.key" \
+                        --ca-file "${CERT_DIR}/ca.cer" \
+                        --fullchain-file "${CERT_DIR}/fullchain.cer" \
+                        || ret=$?
 
+if [ "${ret:=0}" != 0 ] && [ "$ret" != 2 ]
+then
+    exit $ret
+fi
+
+
+# 2 is the returned code when renewals arent necessary (no-ops)

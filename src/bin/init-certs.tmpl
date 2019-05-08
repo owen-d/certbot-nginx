@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+set -euo pipefail
 
 if [ ! "${DOMAINS}" ]
 then
@@ -8,10 +8,7 @@ then
     exit 1
 fi
 
-CERT_DIR=/etc/ssl/acme
-DOMAIN={{ var "DOMAINS" | printf `/usr/local/bin/trim-domain "%s"` | sh }}
-
-if [ ! -f $CERT_DIR/$DOMAIN/$DOMAIN.cer ] || [ ! -f $CERT_DIR/$DOMAIN/$DOMAIN.key ];
+if [ ! -f "${CERT_DIR}/cert.cer" ] || [ ! -f "${CERT_DIR/key.key}" ];
 then
     echo generating initial certs...
     STANDALONE=1 /usr/local/bin/gen-certs

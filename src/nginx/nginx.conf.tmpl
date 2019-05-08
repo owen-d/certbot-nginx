@@ -36,8 +36,9 @@ http {
     ssl                     on;
     # apologies for the heinous templating. Please see docs for details:
     # https://github.com/gliderlabs/sigil
-    ssl_certificate         /etc/ssl/acme/{{ var "DOMAINS" | printf `/usr/local/bin/trim-domain "%s"` | sh }}/{{ var "DOMAINS" | printf `/usr/local/bin/trim-domain "%s"` | sh }}.cer;
-    ssl_certificate_key     /etc/ssl/acme/{{ var "DOMAINS" | printf `/usr/local/bin/trim-domain "%s"` | sh }}/{{ var "DOMAINS" | printf `/usr/local/bin/trim-domain "%s"` | sh }}.key;
+    ssl_certificate         {{ var "CERT_DIR" }}/cert.cer;
+    ssl_certificate_key     {{ var "CERT_DIR" }}/key.key;
+
 
 
     include /etc/nginx/conf.d/ssl-params.inc; # SSL parameters

@@ -3,6 +3,7 @@ FROM alpine:latest
 LABEL maintainer="owen-d"
 
 VOLUME /etc/ssl/acme
+ENV CERT_DIR /etc/ssl/acme
 EXPOSE 80
 
 RUN apk update && apk add --no-cache nginx curl libressl git socat && \
